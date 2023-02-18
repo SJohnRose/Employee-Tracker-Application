@@ -17,9 +17,7 @@ const db = mysql.createConnection(
     console.log(`Connected to the employee_db database.`)
   );
   
-//   db.query('SELECT * FROM role', function (err, results) {
-//     console.log(results);
-//   });
+  
   
   async function askQuestions() {
     while(true) {
@@ -39,16 +37,28 @@ const db = mysql.createConnection(
 function runQuery(userChoice) {
     switch(userChoice) {
         case choiceList[0]: console.log(choiceList[0] + ' selected');
+                            db.query('SELECT * FROM employee', function (err, results) {
+                              console.log('\n');
+                              console.table(results);
+                            });
                             break;
         case choiceList[1]: console.log(choiceList[1] + ' selected');
                             break;
         case choiceList[2]: console.log(choiceList[2] + ' selected');
                             break;
         case choiceList[3]: console.log(choiceList[3] + ' selected');
+                            db.query('SELECT * FROM role', function (err, results) {
+                              console.log('\n');
+                              console.table(results);
+                            });
                             break;
         case choiceList[4]: console.log(choiceList[4] + ' selected');
                             break;
         case choiceList[5]: console.log(choiceList[5] + ' selected');
+                            db.query('SELECT * FROM department', function (err, results) {
+                              console.log('\n');
+                              console.table(results);
+                            });
                             break;
         case choiceList[6]: process.exit(0);
     }
