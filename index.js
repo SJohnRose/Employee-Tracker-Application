@@ -1,6 +1,8 @@
-//  import the inquirer and MySql2 packages
+//  import the inquirer, MySql2 and console.table packages
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
+const tableData = require('console.table');
+
 
 const choiceList = ['View all employees', 'Add Employee', 'Update Employee Role', 'View all roles', 'Add Role', 'View all departments', 'Quit'];
 
@@ -8,9 +10,7 @@ const choiceList = ['View all employees', 'Add Employee', 'Update Employee Role'
 const db = mysql.createConnection(
     {
       host: 'localhost',
-      // MySQL username,
       user: 'root',
-      // TODO: Add MySQL password here
       password: 'MySQL123#',
       database: 'employee_db'
     },
