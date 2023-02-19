@@ -1,27 +1,24 @@
 //  import the inquirer, MySql2 and console.table packages
 const inquirer = require('inquirer');
-const mysql = require('mysql2');
+//const mysql = require('mysql2');
 const tableData = require('console.table');
+const db = require('./src/dbConnection');
 
 const newEmployeeQuestions = require("./src/newEmployeeQuestions");
+
 const { version } = require('os');
 
 
 const choiceList = ['View all employees', 'Add Employee', 'Update Employee Role', 'View all roles', 'Add Role', 'View all departments', 'Quit'];
 
-// Connect to the employee database
-const db = mysql.createConnection(
-    {
-      host: 'localhost',
-      user: 'root',
-      password: 'MySQL123#',
-      database: 'employee_db'
-    },
-    console.log(`Connected to the employee_db database.`)
-  );
+function getAllRoles() {
+  var roles = db.query('SELECT title FROM role', function (err, results) {
+    console.log(results);
+  });
   
-  
-  
+  return roles;
+}
+
 async function askQuestions() {
   while(true) {
         var selection = await inquirer.prompt([
@@ -49,9 +46,21 @@ async function askQuestions() {
                               });               
                               break;
           case choiceList[2]: console.log(choiceList[2] + ' selected');
-                              var updateEmployee = await inquirer.prompt{[
-                                name: ''
-                              ]}
+                              var updateEmployee = await inquirer.prompt([
+                              {
+                                name: 'updateName',
+                                message :"What is the employee's name to update?",
+                              },
+                              {
+                                name: 'newRole',
+                                message : "What is the new role?",
+                                choices : getAllRoles(),
+                              },
+                              ]);
+                              db.query('UPDATE employee SET role_id = ', function (err, results) {
+                                console.log('\n');
+                                console.table(results);
+                              });
                               break;
           case choiceList[3]: console.log(choiceList[3] + ' selected');
                               db.query('SELECT * FROM role', function (err, results) {
