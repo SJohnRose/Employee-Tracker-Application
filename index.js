@@ -3,6 +3,9 @@ const inquirer = require('inquirer');
 const mysql = require('mysql2');
 const tableData = require('console.table');
 
+const newEmployeeQuestions = require("./src/newEmployeeQuestions");
+const { version } = require('os');
+
 
 const choiceList = ['View all employees', 'Add Employee', 'Update Employee Role', 'View all roles', 'Add Role', 'View all departments', 'Quit'];
 
@@ -19,8 +22,8 @@ const db = mysql.createConnection(
   
   
   
-  async function askQuestions() {
-    while(true) {
+async function askQuestions() {
+  while(true) {
         var selection = await inquirer.prompt([
         {
             name: 'userChoice',
@@ -29,39 +32,46 @@ const db = mysql.createConnection(
             choices: choiceList,
         }
         ]);
-        runQuery(selection.userChoice);
-               
+        switch(selection.userChoice) {
+          case choiceList[0]: console.log(choiceList[0] + ' selected');
+                              db.query('SELECT * FROM employee', function (err, results) {
+                                console.log('\n');
+                                console.table(results);
+                              });
+                              break;
+          case choiceList[1]: console.log(choiceList[1] + ' selected');
+                              var newEmployee = await inquirer.prompt(newEmployeeQuestions);
+                              var queryStr = `INSERT INTO employee(first_name, last_name, role_id, manager_id) 
+                                              VALUES ('${newEmployee.firstName}', '${newEmployee.lastName}', ${newEmployee.role_id}, '${newEmployee.manager_id}');`;
+                              db.execute(queryStr, function (err, results) {
+                                  console.log('\n');
+                                  
+                              });               
+                              break;
+          case choiceList[2]: console.log(choiceList[2] + ' selected');
+                              var updateEmployee = await inquirer.prompt{[
+                                name: ''
+                              ]}
+                              break;
+          case choiceList[3]: console.log(choiceList[3] + ' selected');
+                              db.query('SELECT * FROM role', function (err, results) {
+                                console.log('\n');
+                                console.table(results);
+                              });
+                              break;
+          case choiceList[4]: console.log(choiceList[4] + ' selected');
+                              break;
+          case choiceList[5]: console.log(choiceList[5] + ' selected');
+                              db.query('SELECT * FROM department', function (err, results) {
+                                console.log('\n');
+                                console.table(results);
+                              });
+                              break;
+          case choiceList[6]: process.exit(0);
+      }      
     }
 }
 
-function runQuery(userChoice) {
-    switch(userChoice) {
-        case choiceList[0]: console.log(choiceList[0] + ' selected');
-                            db.query('SELECT * FROM employee', function (err, results) {
-                              console.log('\n');
-                              console.table(results);
-                            });
-                            break;
-        case choiceList[1]: console.log(choiceList[1] + ' selected');
-                            break;
-        case choiceList[2]: console.log(choiceList[2] + ' selected');
-                            break;
-        case choiceList[3]: console.log(choiceList[3] + ' selected');
-                            db.query('SELECT * FROM role', function (err, results) {
-                              console.log('\n');
-                              console.table(results);
-                            });
-                            break;
-        case choiceList[4]: console.log(choiceList[4] + ' selected');
-                            break;
-        case choiceList[5]: console.log(choiceList[5] + ' selected');
-                            db.query('SELECT * FROM department', function (err, results) {
-                              console.log('\n');
-                              console.table(results);
-                            });
-                            break;
-        case choiceList[6]: process.exit(0);
-    }
-}
+
 
 askQuestions();
