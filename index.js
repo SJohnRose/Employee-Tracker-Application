@@ -33,18 +33,19 @@ async function askQuestions() {
                           console.log(choiceList[1] + ' selected');
                           var newEmployee = await inquirer.prompt(newEmployeeQuestions);
                           var roleAnswer = await inquirer.prompt([
-                                  {
-                                    name: 'newRole',
-                                    message : "What is the new role?",
-                                    type: 'list',
-                                    choices : await getRoles(),
-                                  },
-                                ]);
-                                               
-                            queryStr = QueryObj.addEmployee(newEmployee,roleAnswer);
-                                db.execute(queryStr, function (err, results) {
-                                  console.log('\n');
-                                }); 
+                          {
+                            name: 'newRole',
+                            message : "What is the role?",
+                            type: 'list',
+                            choices : await getRoles(),
+                          },
+                          ]);
+                          var roleID = await getRoleID(roleAnswer.newRole);              
+                          queryStr = QueryObj.addEmployee(newEmployee,roleID);
+                          console.log(queryStr);
+                          db.execute(queryStr, function (err, results) {
+                            console.log('Employee Added');
+                          }); 
                           //getRoles();
                           
                                   
@@ -66,7 +67,8 @@ async function askQuestions() {
                             choices : await getRoles(),
                           },
                           ]);
-                          var roleID = `SELECT id from role where title = '${updateDetails.newRole}';`;
+                          //var roleID = `SELECT id from role where title = '${updateDetails.newRole}';`;
+                          roleID = await getRoleID(updateDetails.newRole);
                           queryStr = QueryObj.upDateEmployeeRole(updateDetails, roleID);
                           runQuery(queryStr);
                           break;
@@ -117,13 +119,18 @@ async function getRoles() {
 }
   
 
-
-
 async function getDepts() {
   var sql = 'SELECT name FROM department';
   const results = await db.promise().query(sql);
   return(results[0].map((entry) => entry.title));
   
+}
+
+async function getRoleID(role) {
+  var sql = `SELECT id from role where title = '${role}';`;
+  const results = await db.promise().query(sql);
+  console.log(results[0][0]["id"]);
+  return(results[0][0]["id"]);
 }
 
 askQuestions();

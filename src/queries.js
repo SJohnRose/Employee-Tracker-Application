@@ -8,7 +8,7 @@ class Query {
     addEmployee(answers, role) {
         var queryStr = `INSERT INTO employee(first_name, last_name, role_id, manager_id) 
                           VALUES ('${answers.firstName}', 
-                          '${answers.lastName}', ${role}, '${answers.manager_id}');`;
+                          '${answers.lastName}', ${role}, '${answers.managerID}');`;
         return queryStr;
     }
 
