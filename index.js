@@ -8,6 +8,7 @@ const Query = require('./src/queries') ;
 
 const { version } = require('os');
 
+// Declare global variables
 const choiceList = ['View all employees', 'Add Employee', 'Update Employee Role', 'View all roles', 'Add Role', 'View all departments', 'Quit'];
 var selection, queryStr;
 var QueryObj = new Query(); 
@@ -46,9 +47,6 @@ async function askQuestions() {
                           db.execute(queryStr, function (err, results) {
                             console.log('Employee Added');
                           }); 
-                          //getRoles();
-                          
-                                  
                           break;
       case choiceList[2]: console.log(choiceList[2] + ' selected');
                           var updateDetails = await inquirer.prompt([
@@ -67,7 +65,6 @@ async function askQuestions() {
                             choices : await getRoles(),
                           },
                           ]);
-                          //var roleID = `SELECT id from role where title = '${updateDetails.newRole}';`;
                           roleID = await getRoleID(updateDetails.newRole);
                           queryStr = QueryObj.upDateEmployeeRole(updateDetails, roleID);
                           runQuery(queryStr);

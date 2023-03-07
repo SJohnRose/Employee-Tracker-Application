@@ -1,7 +1,10 @@
 class Query {
     
     viewEmployees() {
-        var queryStr = 'SELECT * FROM employee;';
+        //var queryStr = 'SELECT * FROM employee;';
+        var queryStr = `select e.id, first_name, last_name, title, d.name as department, salary, manager_id from employee e 
+                        left join role on e.role_id = role.id 
+                        left join department d on role.department_id = d.id`;
         return queryStr;
     }
 
