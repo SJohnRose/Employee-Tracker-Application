@@ -14,7 +14,7 @@ var selection, queryStr;
 var QueryObj = new Query(); 
 
 
-
+// Function to start the process
 async function askQuestions() {
   while(true) {
     selection = await inquirer.prompt([
@@ -102,6 +102,7 @@ async function askQuestions() {
   }
 }
 
+// Function to run each query
 function runQuery(query) {
   db.query(query, function (err, results) {
     console.log('\n');
@@ -109,13 +110,14 @@ function runQuery(query) {
   });
 }
 
+// Function that returns all roles from Role table
 async function getRoles() {
   var sql = 'SELECT title FROM role';
   const results = await db.promise().query(sql)
   return(results[0].map((entry) => entry.title));
 }
   
-
+//  Function that returns all department names from Department table
 async function getDepts() {
   var sql = 'SELECT name FROM department';
   const results = await db.promise().query(sql);
@@ -123,6 +125,7 @@ async function getDepts() {
   
 }
 
+// Function that returns role id if given the role title
 async function getRoleID(role) {
   var sql = `SELECT id from role where title = '${role}';`;
   const results = await db.promise().query(sql);
