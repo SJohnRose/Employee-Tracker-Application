@@ -3,7 +3,9 @@ const inquirer = require('inquirer');
 const tableData = require('console.table');
 
 const db = require('./src/dbConnection');
-const newEmployeeQuestions = require("./src/newEmployeeQuestions");
+const newEmployeeQuestions = require('./src/questions');
+const newRoleQuestions = require('./src/questions');
+const updateEmployeeQuestions = require('./src/questions');
 const Query = require('./src/queries') ;
 
 const { version } = require('os');
@@ -16,9 +18,12 @@ var QueryObj = new Query();
 
 // Function to start the process
 async function askQuestions() {
+  console.clear();
+  console.log("****** EMPLOYEE TRACKER APPLICATION **********");
   while(true) {
     selection = await inquirer.prompt([
     {
+      waitUserInput: true,
       name: 'userChoice',
       message: 'What would you like to do?',
       type: 'list',
@@ -26,80 +31,40 @@ async function askQuestions() {
     }
     ]);
     switch(selection.userChoice) {
-      case choiceList[0]: console.log(choiceList[0] + ' selected');
-                          queryStr = QueryObj.viewEmployees();
+      case choiceList[0]: queryStr = QueryObj.viewEmployees();
                           runQuery(queryStr);
                           break;
-      case choiceList[1]: 
-                          console.log(choiceList[1] + ' selected');
+      case choiceList[1]: newEmployeeQuestions[3].choices = await getRoles();
                           var newEmployee = await inquirer.prompt(newEmployeeQuestions);
-                          var roleAnswer = await inquirer.prompt([
-                          {
-                            name: 'newRole',
-                            message : "What is the role?",
-                            type: 'list',
-                            choices : await getRoles(),
-                          },
-                          ]);
-                          var roleID = await getRoleID(roleAnswer.newRole);              
+                          var roleID = await getRoleID(newEmployee.newRole);              
                           queryStr = QueryObj.addEmployee(newEmployee,roleID);
-                          console.log(queryStr);
                           db.execute(queryStr, function (err, results) {
-                            console.log('Employee Added');
+                            console.log('\n');
                           }); 
                           break;
-      case choiceList[2]: console.log(choiceList[2] + ' selected');
-                          var updateDetails = await inquirer.prompt([
-                          {
-                            name: 'firstName',
-                            message :"What is the employee's first name?",
-                          },
-                          {
-                            name: 'lastName',
-                            message :"What is the employee's last name?",
-                          },
-                          {
-                            name: 'newRole',
-                            message : "What is the new role?",
-                            type: 'list',
-                            choices : await getRoles(),
-                          },
-                          ]);
+      case choiceList[2]: updateEmployeeQuestions[2].choices = await getRoles();
+                          var updateDetails = await inquirer.prompt(updateEmployeeQuestions);
                           roleID = await getRoleID(updateDetails.newRole);
                           queryStr = QueryObj.upDateEmployeeRole(updateDetails, roleID);
                           runQuery(queryStr);
                           break;
-      case choiceList[3]: console.log(choiceList[3] + ' selected');
-                          queryStr = QueryObj.viewRoles();
+      case choiceList[3]: queryStr = QueryObj.viewRoles();
                           runQuery(queryStr);
                           break;
-      case choiceList[4]: console.log(choiceList[4] + ' selected');
-                          var newRole = await inquirer.prompt([
-                          {
-                            name: 'roleTitle',
-                            message :"What is the title of new role?",
-                          },
-                          {
-                            name: 'salary',
-                            message :"What is the salary of the new role?",
-                          },
-                          {
-                            name: 'roleDept',
-                            message : "What is the department the new role belongs to?",
-                            choices : await getDepts(),
-                          },
-                          ]);
-                          var deptID = `SELECT id from department where name = '${newRole.roleDept}';`;
+      case choiceList[4]: newRoleQuestions[2].choices = await getDepts();
+                          var newRole = await inquirer.prompt(newRoleQuestions)
+                          var deptID = await getDeptID(newRole.roleDept);
                           queryStr = QueryObj.addRole(newRole, deptID);
                           runQuery(queryStr);
                           break;
-      case choiceList[5]: console.log(choiceList[5] + ' selected');
-                          queryStr = QueryObj.viewDepartments();
+      case choiceList[5]: queryStr = QueryObj.viewDepartments();
                           runQuery(queryStr);
                           break;
       case choiceList[6]: process.exit(0);
-    }      
+    } 
+    
   }
+  
 }
 
 // Function to run each query
@@ -107,6 +72,7 @@ function runQuery(query) {
   db.query(query, function (err, results) {
     console.log('\n');
     console.table(results);
+    console.log('\n\n');
   });
 }
 
@@ -121,7 +87,8 @@ async function getRoles() {
 async function getDepts() {
   var sql = 'SELECT name FROM department';
   const results = await db.promise().query(sql);
-  return(results[0].map((entry) => entry.title));
+  //console.log(results[0].map((entry) => entry.name));
+  return(results[0].map((entry) => entry.name));
   
 }
 
@@ -129,7 +96,13 @@ async function getDepts() {
 async function getRoleID(role) {
   var sql = `SELECT id from role where title = '${role}';`;
   const results = await db.promise().query(sql);
-  console.log(results[0][0]["id"]);
+  return(results[0][0]["id"]);
+}
+
+// Function that returns dept id if given the dept name
+async function getDeptID(dept) {
+  var sql = `SELECT id from department where name = '${dept}';`;
+  const results = await db.promise().query(sql);
   return(results[0][0]["id"]);
 }
 

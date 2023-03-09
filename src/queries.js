@@ -27,9 +27,9 @@ class Query {
     }
 
     addRole(answers, dept) {
-        var queryStr = `INSERT INTO role(title, salary, department) 
-                          VALUES ('${answers.title}', 
-                          ${answers.salary}, ${dept}');`;
+        var queryStr = `INSERT INTO role(title, salary, department_id) 
+                          VALUES ('${answers.roleTitle}', 
+                          ${answers.salary}, ${dept});`;
         return queryStr;
     }
 
