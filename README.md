@@ -33,7 +33,7 @@ THEN I am prompted to select an employee to update and their new role and this i
 
 ## How to run the application?
 Please use the following commands:
-> npm install
+> npm install  
 > node index.js
 
 ## How to access the application?
