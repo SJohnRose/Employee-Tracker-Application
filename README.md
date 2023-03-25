@@ -32,7 +32,9 @@ WHEN I choose to update an employee role
 THEN I am prompted to select an employee to update and their new role and this information is updated in the database  
 
 ## How to run the application?
-
+Please use the following commands:
+> npm install
+> node index.js
 
 ## How to access the application?
 Please use the following link:https://github.com/SJohnRose/Employee-Tracker-Application 
